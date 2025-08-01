@@ -83,7 +83,7 @@ function checkWinner( // winning conditaion
 }
 
 /*function checkForDraw(
-  rowNum: number,
+  rowNum: number
   colNum: number,
   gameBoard: (string | null)[][]
 ): boolean {
