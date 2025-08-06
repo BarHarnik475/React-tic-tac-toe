@@ -247,45 +247,32 @@ function App() {
     <main>
       <div id="game-container">
         <ol id="players">
-          <PlayerInfo // maping the players index/symbol
-            playerInformation={gameFlow.players[0]}
-            handleNameChange={(name) => {
-              console.log(name);
-              gameFlow.setFirstPlayerInfo((prevValue) => {
-                return {
-                  ...prevValue,
-                  name,
-                };
-              });
-            }}
-          />
-          <PlayerInfo
-            playerInformation={gameFlow.players[1]}
-            handleNameChange={(name) =>
-              gameFlow.setSecondPlayerInfo((prevValue) => ({
-                ...prevValue,
-                name,
-              }))
-            }
-          />
+          {gameFlow.playersInfo.map((player, index) => (
+            <PlayerInfo
+              playerInformation={player}
+              handleNameChange={(name) => {
+                gameFlow.setPlayerName(index, name);
+              }}
+            />
+          ))}
         </ol>
-        {(gameFlow.winner || (!gameFlow.winner && gameFlow.isGameOver)) && ( // need to render the gameover screen
+        {gameFlow.gameState.isGameOver && ( // need to render the gameover screen
           //only check if game is over and based on that logic detemained if there is a winner or a draw
           <GameOver
             winnerNameInfo={
-              gameFlow.winner?.symbol === "X"
-                ? gameFlow.players[0]
-                : gameFlow.players[1]
+              gameFlow.gameState.winner
+                ? gameFlow.gameState.winner.symbol === "X"
+                  ? gameFlow.players[0]
+                  : gameFlow.players[1]
+                : { name: "", symbol: "X", score: 0 } // default dummy fallback for draw
             }
-            isDraw={!gameFlow.winner && gameFlow.isGameOver}
-            handleRematch={gameFlow.handleRematch}
-            handleRestart={gameFlow.handelRestart}
+            isDraw={!gameFlow.gameState.winner && gameFlow.gameState.isGameOver}
+            handlereset={gameFlow.reset}
           />
         )}
         <GameBoard
-          gameFlow={gameFlow} // remove
-          gameBoard={gameBoard}
-          handleClick={handleBoardClick}
+          gameBoard={gameFlow.gameState.board}
+          handleClick={gameFlow.makeMove}
         />
       </div>
     </main>

@@ -20,19 +20,54 @@ export const useGame = () => {
   });
   const [counter, setCounter] = useState(0);
   const players = [firstPlayerInfo, secondPlayerInfo];
+  const [playersInfo, setPlayersInfo] = useState<IPlayer[]>(players);
   //const activePlayer = players[counter % 2];
 
   const [winner, setWinner] = useState<IPlayer | null>(null);
 
   const [gameBoard, setGameBoard] = useState<GameBoardType>(getInitialBoard);
 
-  function reset() {
-    setGameBoard(() => getInitialBoard());
-    setWinner(null);
-    setCounter(0);
+  const [gameState, setGameState] = useState<{
+    board: GameBoardType;
+    winner: IPlayer | null;
+    count: number;
+    isGameOver: boolean;
+  }>({
+    board: getInitialBoard(),
+    winner: null,
+    count: 0,
+    isGameOver: false,
+  });
+
+  function reset(flag: number) {
+    setGameState(() => ({
+      board: getInitialBoard(),
+      winner: null,
+      count: 0,
+      isGameOver: false,
+    }));
+    // add the map and create string literal "player + index + 1" and than you need to handle the score somehow
+    if (flag === 1) {
+      setFirstPlayerInfo((prevValue) => ({
+        ...prevValue,
+        name: "Player1",
+        score: 0,
+      }));
+      setSecondPlayerInfo((prevValue) => ({
+        ...prevValue,
+        name: "Player2",
+        score: 0,
+      }));
+    }
   }
 
-  function handleRematch(symbol: string, isDraw: boolean) {
+  const setPlayerName = (index: number, name: string) => {
+    setPlayersInfo((prevValue) =>
+      prevValue.map((player, i) => (i === index ? { ...player, name } : player))
+    );
+  };
+
+  /*function handleRematch(symbol: string, isDraw: boolean) {
     if (isDraw) return;
     if (symbol === "X") {
       setFirstPlayerInfo((prevValue) => ({
@@ -46,7 +81,7 @@ export const useGame = () => {
       }));
     }
   }
-
+*/
   function handelRestart() {
     const newBoard = [
       [null, null, null],
@@ -82,30 +117,53 @@ export const useGame = () => {
     }));
   };
 
+  const setSecondPlayerName = (name: string) => {
+    setSecondPlayerInfo((prevValue) => ({
+      ...prevValue,
+      name,
+    }));
+  };
+
   return {
-    winner,
-    isGameOver: counter === 9 || winner !== null,
-    gameBoard,
+    gameState,
+    playersInfo,
     players,
-    handleRematch,
-    handelRestart,
-    setFirstPlayerInfo, //remove
-    setSecondPlayerInfo, // remove
+    reset,
+    setPlayerName,
+    //handleRematch,
+    //handelRestart,
+    setFirstPlayerName, //remove
+    setSecondPlayerName, // remove
     makeMove: (rowIndex: number, colIndex: number) => {
-      const currentPlayer = players[counter % 2];
-      setGameBoard((prevState) => {
-        // change into an object like example is slack
-        const updatedGameBoard = prevState.map((r) => [...r]);
-        updatedGameBoard[rowIndex][colIndex] = currentPlayer.symbol;
-        const winnerSymbol = checkWinner(updatedGameBoard);
-        const winner =
-          players.find((player) => player.symbol === winnerSymbol) ?? null;
-        setWinner(winner);
-        return updatedGameBoard;
+      const currentPlayer = players[gameState.count % 2];
+      const updatedGameBoard = gameState.board.map((r) => [...r]);
+      updatedGameBoard[rowIndex][colIndex] = currentPlayer.symbol;
+      const winnerSymbol = checkWinner(updatedGameBoard);
+      const newCount = gameState.count + 1;
+      const winner =
+        players.find((player) => player.symbol === winnerSymbol) ?? null;
+      const draw = newCount === 9 && !winner;
+      setGameState({
+        board: updatedGameBoard,
+        winner,
+        count: newCount,
+        isGameOver: winner != null || draw,
       });
+
       // check winnig condition
       // update count to check whos turn it it
-      setCounter((prevValue) => prevValue + 1);
+      //setCounter((prevValue) => prevValue + 1);
+      if (winnerSymbol === "X") {
+        setFirstPlayerInfo((prevValue) => ({
+          ...prevValue,
+          score: prevValue.score + 1,
+        }));
+      } else if (winnerSymbol === "O") {
+        setSecondPlayerInfo((prevValue) => ({
+          ...prevValue,
+          score: prevValue.score + 1,
+        }));
+      }
     },
   };
 };
