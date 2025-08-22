@@ -12,154 +12,137 @@ export const useGame = () => {
     name: "Player1",
     symbol: "X",
     score: 0,
+    isChanged: false,
   });
   const [secondPlayerInfo, setSecondPlayerInfo] = useState<IPlayer>({
     name: "Player2",
     symbol: "O",
     score: 0,
+    isChanged: false,
   });
-  const [counter, setCounter] = useState(0);
-  const players = [firstPlayerInfo, secondPlayerInfo];
-  const [playersInfo, setPlayersInfo] = useState<IPlayer[]>(players);
-  //const activePlayer = players[counter % 2];
-
-  const [winner, setWinner] = useState<IPlayer | null>(null);
-
-  const [gameBoard, setGameBoard] = useState<GameBoardType>(getInitialBoard);
-
+  const [isValid, setIsValid] = useState({
+    // unnececeray
+    firstInput: true,
+    secondInput: true,
+  });
   const [gameState, setGameState] = useState<{
     board: GameBoardType;
-    winner: IPlayer | null;
+    winner: IPlayer | null | undefined;
     count: number;
-    isGameOver: boolean;
   }>({
     board: getInitialBoard(),
     winner: null,
     count: 0,
-    isGameOver: false,
   });
-
-  function reset(flag: number) {
+  function resetGameBoard() {
+    // sepetare it to two functions
     setGameState(() => ({
       board: getInitialBoard(),
       winner: null,
       count: 0,
-      isGameOver: false,
     }));
-    // add the map and create string literal "player + index + 1" and than you need to handle the score somehow
-    if (flag === 1) {
-      setFirstPlayerInfo((prevValue) => ({
-        ...prevValue,
-        name: "Player1",
-        score: 0,
-      }));
-      setSecondPlayerInfo((prevValue) => ({
-        ...prevValue,
-        name: "Player2",
-        score: 0,
-      }));
-    }
   }
 
-  const setPlayerName = (index: number, name: string) => {
-    setPlayersInfo((prevValue) =>
-      prevValue.map((player, i) => (i === index ? { ...player, name } : player))
-    );
-  };
-
-  /*function handleRematch(symbol: string, isDraw: boolean) {
-    if (isDraw) return;
-    if (symbol === "X") {
-      setFirstPlayerInfo((prevValue) => ({
-        ...prevValue,
-        score: prevValue.score + 1,
-      }));
-    } else {
-      setSecondPlayerInfo((prevValue) => ({
-        ...prevValue,
-        score: prevValue.score + 1,
-      }));
-    }
-  }
-*/
-  function handelRestart() {
-    const newBoard = [
-      [null, null, null],
-      [null, null, null],
-      [null, null, null],
-    ];
-    setGameBoard(() => {
-      const updatedGameBoard: null[][] = [
-        ...newBoard.map((innerArray) => [...innerArray]),
-      ];
-      const winnerSymbol = checkWinner(updatedGameBoard);
-      const winner =
-        players.find((player) => player.symbol === winnerSymbol) ?? null;
-      setWinner(winner);
-      return updatedGameBoard;
-    });
+  function resetPlayerInfo() {
     setFirstPlayerInfo((prevValue) => ({
       ...prevValue,
-      score: 0,
       name: "Player1",
+      score: 0,
+      isChanged: false,
     }));
     setSecondPlayerInfo((prevValue) => ({
       ...prevValue,
-      score: 0,
       name: "Player2",
+      score: 0,
+      isChanged: false,
     }));
   }
-
   const setFirstPlayerName = (name: string) => {
+    if (name === "" || name === secondPlayerInfo.name) {
+      setIsValid((prevValue) => ({
+        ...prevValue,
+        firstInput: false,
+      }));
+      setTimeout(() => {
+        setIsValid((prevValue) => ({
+          ...prevValue,
+          firstInput: true,
+        }));
+      }, 1500);
+      return;
+    }
     setFirstPlayerInfo((prevValue) => ({
       ...prevValue,
       name,
+      isChanged: !prevValue.isChanged,
     }));
   };
 
   const setSecondPlayerName = (name: string) => {
+    if (name === "" || name === firstPlayerInfo.name) {
+      setIsValid((prevValue) => ({
+        ...prevValue,
+        secondInput: false,
+      }));
+      setTimeout(() => {
+        setIsValid((prevValue) => ({
+          ...prevValue,
+          secondInput: true,
+        }));
+      }, 1500);
+      return;
+    }
     setSecondPlayerInfo((prevValue) => ({
       ...prevValue,
       name,
+      isChanged: !prevValue.isChanged,
     }));
   };
 
+  const players = [
+    {
+      playerInfo: firstPlayerInfo,
+      handleNameChange: setFirstPlayerName,
+      isValid: isValid.firstInput,
+    },
+    {
+      playerInfo: secondPlayerInfo,
+      handleNameChange: setSecondPlayerName,
+      isValid: isValid.secondInput,
+    },
+  ];
+
   return {
     gameState,
-    playersInfo,
     players,
-    reset,
-    setPlayerName,
-    //handleRematch,
-    //handelRestart,
-    setFirstPlayerName, //remove
-    setSecondPlayerName, // remove
+    resetGameBoard,
+    resetPlayerInfo,
+    isValid,
+    firstPlayerInfo,
+    secondPlayerInfo,
+    setFirstPlayerName,
+    setSecondPlayerName,
     makeMove: (rowIndex: number, colIndex: number) => {
       const currentPlayer = players[gameState.count % 2];
       const updatedGameBoard = gameState.board.map((r) => [...r]);
-      updatedGameBoard[rowIndex][colIndex] = currentPlayer.symbol;
+      updatedGameBoard[rowIndex][colIndex] = currentPlayer.playerInfo.symbol;
       const winnerSymbol = checkWinner(updatedGameBoard);
       const newCount = gameState.count + 1;
       const winner =
-        players.find((player) => player.symbol === winnerSymbol) ?? null;
-      const draw = newCount === 9 && !winner;
+        players.find((player) => player.playerInfo.symbol === winnerSymbol)
+          ?.playerInfo ?? null;
+      // if (winnerObject === undefined) winnerObject = null;
+      //const winner = winnerObject?.playerInfo;
+      //const draw = newCount === 9 && !winner;
       setGameState({
         board: updatedGameBoard,
         winner,
         count: newCount,
-        isGameOver: winner != null || draw,
       });
-
-      // check winnig condition
-      // update count to check whos turn it it
-      //setCounter((prevValue) => prevValue + 1);
-      if (winnerSymbol === "X") {
-        setFirstPlayerInfo((prevValue) => ({
-          ...prevValue,
-          score: prevValue.score + 1,
-        }));
-      } else if (winnerSymbol === "O") {
-        setSecondPlayerInfo((prevValue) => ({
+      if (winnerSymbol != null) {
+        const setPlayerInfo =
+          winnerSymbol === "X" ? setFirstPlayerInfo : setSecondPlayerInfo;
+        setPlayerInfo((prevValue) => ({
           ...prevValue,
           score: prevValue.score + 1,
         }));

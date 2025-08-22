@@ -1,38 +1,38 @@
 import { useRef } from "react";
 
 type PlayerInfoProps = {
-  playerInformation: { name: string; symbol: string; score: number };
+  playerInformation: {
+    name: string;
+    symbol: string;
+    score: number;
+    isChanged: boolean;
+  };
   handleNameChange: (name: string) => void;
+  isValid: boolean;
 };
 
-function PlayerInfo({ playerInformation, handleNameChange }: PlayerInfoProps) {
-  function whichPlayer(symbol: string): string {
-    if (symbol === "X") return "Player1";
-    else return "Player2";
-  }
-  const str: string = whichPlayer(playerInformation.symbol);
+function PlayerInfo({
+  playerInformation,
+  handleNameChange,
+  isValid,
+}: PlayerInfoProps) {
   const inputRef = useRef<HTMLInputElement>(null);
-  //inputRef.current?.value ?? "Player1"
-  let checkEdit: boolean = false;
-  if (playerInformation.symbol === "X" && playerInformation.name !== "Player1")
-    checkEdit = true;
-  else if (
-    playerInformation.symbol === "O" &&
-    playerInformation.name != "Player2"
-  )
-    checkEdit = true;
-  else checkEdit = false;
   return (
     <div className="player">
       <li>
+        {!isValid ? (
+          <p className="error-message">⚠ Not valid input please try again</p>
+        ) : null}
         <span className="player-name">{playerInformation.score}</span>
         <span className="player-name">{playerInformation.name}</span>
         <span className="player-symbol">{playerInformation.symbol}</span>
-        {checkEdit ? null : <input type="text" ref={inputRef} />}
+        {playerInformation.isChanged ? null : (
+          <input type="text" ref={inputRef} />
+        )}
         <button
-          onClick={() => handleNameChange(inputRef.current?.value ?? str)}
+          onClick={() => handleNameChange(inputRef.current?.value ?? "  ")}
         >
-          {!checkEdit ? "Save" : "Edit"}
+          {!playerInformation.isChanged ? "Save" : "Edit"}
         </button>
       </li>
     </div>

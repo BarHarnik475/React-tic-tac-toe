@@ -5,10 +5,16 @@ type GameOverProps = {
     score: number;
   };
   isDraw: boolean;
-  handlereset: (flag: number) => void;
+  handleResetGame: () => void;
+  handleResetPlayer: () => void;
 };
 
-function GameOver({ winnerNameInfo, isDraw, handlereset }: GameOverProps) {
+function GameOver({
+  winnerNameInfo,
+  isDraw,
+  handleResetGame,
+  handleResetPlayer,
+}: GameOverProps) {
   return (
     <div id="game-over">
       <h2>Game Over!</h2>
@@ -17,8 +23,15 @@ function GameOver({ winnerNameInfo, isDraw, handlereset }: GameOverProps) {
         {/* determined if we have a winner */}
       </p>
       <div className="game-over-buttons">
-        <button onClick={() => handlereset(0)}>rematch</button>
-        <button onClick={() => handlereset(1)}>restart</button>
+        <button onClick={() => handleResetGame()}>rematch</button>
+        <button
+          onClick={() => {
+            handleResetGame();
+            handleResetPlayer();
+          }}
+        >
+          restart
+        </button>
       </div>
     </div>
   );
