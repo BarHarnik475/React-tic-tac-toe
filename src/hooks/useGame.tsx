@@ -20,11 +20,6 @@ export const useGame = () => {
     score: 0,
     isChanged: false,
   });
-  const [isValid, setIsValid] = useState({
-    // unnececeray
-    firstInput: true,
-    secondInput: true,
-  });
   const [gameState, setGameState] = useState<{
     board: GameBoardType;
     winner: IPlayer | null | undefined;
@@ -57,58 +52,39 @@ export const useGame = () => {
       isChanged: false,
     }));
   }
+
   const setFirstPlayerName = (name: string) => {
-    if (name === "" || name === secondPlayerInfo.name) {
-      setIsValid((prevValue) => ({
-        ...prevValue,
-        firstInput: false,
-      }));
-      setTimeout(() => {
-        setIsValid((prevValue) => ({
-          ...prevValue,
-          firstInput: true,
-        }));
-      }, 1500);
-      return;
+    if (name === secondPlayerInfo.name) {
+      return "Invalid input two players cant have the same name";
     }
     setFirstPlayerInfo((prevValue) => ({
       ...prevValue,
       name,
       isChanged: !prevValue.isChanged,
     }));
+    return null;
   };
 
   const setSecondPlayerName = (name: string) => {
-    if (name === "" || name === firstPlayerInfo.name) {
-      setIsValid((prevValue) => ({
-        ...prevValue,
-        secondInput: false,
-      }));
-      setTimeout(() => {
-        setIsValid((prevValue) => ({
-          ...prevValue,
-          secondInput: true,
-        }));
-      }, 1500);
-      return;
+    if (name === firstPlayerInfo.name) {
+      return "Invalid input two players cant have the same name";
     }
     setSecondPlayerInfo((prevValue) => ({
       ...prevValue,
       name,
       isChanged: !prevValue.isChanged,
     }));
+    return null;
   };
 
   const players = [
     {
       playerInfo: firstPlayerInfo,
       handleNameChange: setFirstPlayerName,
-      isValid: isValid.firstInput,
     },
     {
       playerInfo: secondPlayerInfo,
       handleNameChange: setSecondPlayerName,
-      isValid: isValid.secondInput,
     },
   ];
 
@@ -117,7 +93,6 @@ export const useGame = () => {
     players,
     resetGameBoard,
     resetPlayerInfo,
-    isValid,
     firstPlayerInfo,
     secondPlayerInfo,
     setFirstPlayerName,
@@ -139,7 +114,7 @@ export const useGame = () => {
         winner,
         count: newCount,
       });
-      if (winnerSymbol != null) {
+      if (winnerSymbol) {
         const setPlayerInfo =
           winnerSymbol === "X" ? setFirstPlayerInfo : setSecondPlayerInfo;
         setPlayerInfo((prevValue) => ({

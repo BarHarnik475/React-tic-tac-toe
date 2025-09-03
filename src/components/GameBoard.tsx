@@ -9,6 +9,7 @@ function GameBoard({ gameBoard, handleClick }: GameBoardProps) {
 
   return (
     //outputing the grid
+    // find another html element to achive the goal of the grid
     <ol id="game-board">
       {gameBoard.map((row, rowIndex: number) => (
         <li key={rowIndex}>
