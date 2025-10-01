@@ -6,11 +6,16 @@ function App() {
   const gameFlow = useGame();
   const isGameOver =
     gameFlow.gameState.winner !== null || gameFlow.gameState.count === 9;
-  const isRestart =
-    gameFlow.gameState.count === 0 &&
-    gameFlow.firstPlayerInfo.name === "Player1"
-      ? true
-      : false;
+  // no need for tyrany operator and pass an error string or undefind
+  const isNameOneChanged = gameFlow.firstPlayerInfo.name !== undefined;
+
+  const isNameSecondChanged = gameFlow.secondPlayerInfo.name !== undefined;
+
+  const error =
+    isNameOneChanged === false || isNameSecondChanged === false
+      ? "error"
+      : null;
+
   return (
     <main>
       <div id="game-container">
@@ -20,7 +25,6 @@ function App() {
               key={playerInfo.symbol}
               playerInformation={playerInfo}
               handleNameChange={handleNameChange}
-              isRestart={isRestart}
             />
           ))}
         </ol>
@@ -34,6 +38,7 @@ function App() {
         <GameBoard
           gameBoard={gameFlow.gameState.board}
           handleClick={gameFlow.makeMove}
+          error={error}
         />
       </div>
     </main>

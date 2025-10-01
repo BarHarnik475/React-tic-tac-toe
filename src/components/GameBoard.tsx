@@ -1,33 +1,50 @@
+//import { useState } from "react";
 import { IPlayer } from "../customTypes";
 type GameBoardProps = {
   gameBoard: (IPlayer["symbol"] | null)[][];
   handleClick: (rowIndex: number, colIndex: number) => void;
+  error: string | null;
 };
 
-function GameBoard({ gameBoard, handleClick }: GameBoardProps) {
-  // need to send as props gameboard state and handleclick func
-
+function GameBoard({ gameBoard, handleClick, error }: GameBoardProps) {
+  // remove state and use the info from app
+  //const [error, SetError] = useState<null | string>(null);
   return (
-    //outputing the grid
-    // find another html element to achive the goal of the grid
-    <ol id="game-board">
-      {gameBoard.map((row, rowIndex: number) => (
-        <li key={rowIndex}>
-          <ol>
-            {row.map((PlayerSymbol, colIndex: number) => (
-              <li key={colIndex}>
+    <table id="game-board">
+      {error ? <caption className="error-message">⚠ {error}</caption> : null}
+      <tbody>
+        {gameBoard.map((row, rowIndex) => (
+          <tr key={rowIndex}>
+            {row.map((PlayerSymbol, colIndex) => (
+              <td key={colIndex}>
                 <button
-                  onClick={() => handleClick(rowIndex, colIndex)}
-                  disabled={PlayerSymbol !== null}
+                  onClick={() => {
+                    /*
+                    if (flag === false) {
+                      SetError(
+                        "Cant start the game before enternig both names"
+                      );
+                      return;
+                    } else {
+                      if (error) {
+                        SetError(null);
+                      }
+                      
+                      
+                    }
+                    */
+                    handleClick(rowIndex, colIndex);
+                  }}
+                  disabled={PlayerSymbol !== null || error != null}
                 >
                   {PlayerSymbol}
                 </button>
-              </li>
+              </td>
             ))}
-          </ol>
-        </li>
-      ))}
-    </ol>
+          </tr>
+        ))}
+      </tbody>
+    </table>
   );
 }
 

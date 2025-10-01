@@ -1,5 +1,5 @@
 export interface IPlayer {
-  name: string;
+  name: string | undefined;
   symbol: "X" | "O";
   score: number;
   isChanged: boolean;

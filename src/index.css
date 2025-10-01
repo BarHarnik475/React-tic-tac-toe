@@ -195,21 +195,30 @@ ol {
 }
 
 #game-board {
-  display: flex;
+  /*display: flex;
   flex-wrap: wrap;
   justify-content: center;
   gap: 2rem;
   margin: 3rem 0;
   padding: 0;
   flex-direction: column;
+  */
+  border-collapse: separate; /* keep spacing between cells */
+  border-spacing: 2rem; /* gap between squares */
+  margin: 3rem auto;
 }
 
-#game-board ol {
+#game-board td {
+  /*
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
   gap: 2rem;
   margin: 0;
+  padding: 0;
+  */
+  width: 8rem;
+  height: 8rem;
   padding: 0;
 }
 

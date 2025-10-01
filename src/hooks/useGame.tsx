@@ -9,13 +9,13 @@ const getInitialBoard = (size: number = 3) =>
 
 export const useGame = () => {
   const [firstPlayerInfo, setFirstPlayerInfo] = useState<IPlayer>({
-    name: "Player1",
+    name: undefined,
     symbol: "X",
     score: 0,
     isChanged: false,
   });
   const [secondPlayerInfo, setSecondPlayerInfo] = useState<IPlayer>({
-    name: "Player2",
+    name: undefined,
     symbol: "O",
     score: 0,
     isChanged: false,
@@ -41,13 +41,13 @@ export const useGame = () => {
   function resetPlayerInfo() {
     setFirstPlayerInfo((prevValue) => ({
       ...prevValue,
-      name: "Player1",
+      name: undefined,
       score: 0,
       isChanged: false,
     }));
     setSecondPlayerInfo((prevValue) => ({
       ...prevValue,
-      name: "Player2",
+      name: undefined,
       score: 0,
       isChanged: false,
     }));
