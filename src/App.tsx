@@ -13,7 +13,7 @@ function App() {
 
   const error =
     isNameOneChanged === false || isNameSecondChanged === false
-      ? "error"
+      ? "Cant start the game before inserting both names"
       : null;
 
   return (

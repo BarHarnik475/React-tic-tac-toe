@@ -11,6 +11,7 @@ type PlayerInfoProps = {
 
 function PlayerInfo({ playerInformation, handleNameChange }: PlayerInfoProps) {
   // add error state null/string that uses onclick and onchange min lenght
+  // split for two buttons
   const [error, setError] = useState<null | string>(null);
   //swap it
   const [edit, setEdit] = useState(true);
@@ -19,6 +20,14 @@ function PlayerInfo({ playerInformation, handleNameChange }: PlayerInfoProps) {
   const handleInputChange = () => {
     if (error) setError(null);
   };
+
+  function validateInput(input: string) {
+    if (input.length < 3) {
+      return "Invalid input player name must have atleast 3 characters";
+    } else {
+      return null;
+    }
+  }
 
   return (
     <div className="player">
@@ -36,30 +45,26 @@ function PlayerInfo({ playerInformation, handleNameChange }: PlayerInfoProps) {
         {edit ? (
           <input type="text" ref={inputRef} onChange={handleInputChange} />
         ) : null}
-        <button
-          onClick={() => {
-            const input = inputRef.current?.value ?? "";
-            if (input.length < 3) {
-              // this condition is for when i click on edit i need to see the input field again
-
-              if (input === "" && !edit) {
-                setEdit((prevValue) => !prevValue);
-              } else {
-                setError(
-                  "Invalid input player name must have atleast 3 characters"
-                );
-              }
-            } else {
-              // change it
-              const error = handleNameChange(input);
-              // need the prevValue for imediate rerender
-              if (!error) setEdit((prevValue) => !prevValue);
+        {edit ? (
+          <button
+            onClick={() => {
+              const input = inputRef.current?.value ?? "";
+              const error = validateInput(input) ?? handleNameChange(input);
+              if (!error) setEdit(false);
               setError(error);
-            }
-          }}
-        >
-          {edit ? "Save" : "Edit"}
-        </button>
+            }}
+          >
+            Save
+          </button>
+        ) : (
+          <button
+            onClick={() => {
+              setEdit(true);
+            }}
+          >
+            Edit
+          </button>
+        )}
       </li>
     </div>
   );
