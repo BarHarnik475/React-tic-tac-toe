@@ -106,9 +106,6 @@ export const useGame = () => {
       const winner =
         players.find((player) => player.playerInfo.symbol === winnerSymbol)
           ?.playerInfo ?? null;
-      // if (winnerObject === undefined) winnerObject = null;
-      //const winner = winnerObject?.playerInfo;
-      //const draw = newCount === 9 && !winner;
       setGameState({
         board: updatedGameBoard,
         winner,

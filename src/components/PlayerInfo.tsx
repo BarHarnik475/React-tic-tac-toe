@@ -10,10 +10,7 @@ type PlayerInfoProps = {
 };
 
 function PlayerInfo({ playerInformation, handleNameChange }: PlayerInfoProps) {
-  // add error state null/string that uses onclick and onchange min lenght
-  // split for two buttons
   const [error, setError] = useState<null | string>(null);
-  //swap it
   const [edit, setEdit] = useState(true);
   const inputRef = useRef<HTMLInputElement>(null);
 

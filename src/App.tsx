@@ -6,7 +6,7 @@ function App() {
   const gameFlow = useGame();
   const isGameOver =
     gameFlow.gameState.winner !== null || gameFlow.gameState.count === 9;
-  // no need for tyrany operator and pass an error string or undefind
+
   const isNameOneChanged = gameFlow.firstPlayerInfo.name !== undefined;
 
   const isNameSecondChanged = gameFlow.secondPlayerInfo.name !== undefined;
